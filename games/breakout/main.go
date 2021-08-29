@@ -109,10 +109,8 @@ func (g *Game) Update() error {
 	moveVector := mat.NewDense(2, 1, nil)
 	moveVector.Product(postureRotateMatrix, velocityVector)
 
-	// matPrint(moveVector)
-
 	// ボールの中心位置を移動させる
-	// 壁の橋にあたったときにX,Yそれぞれ角度を反転させる
+	// 画面の端にあたったときにX,Yそれぞれ角度を反転させる
 	prevBallCenterX := ballCenterX + moveVector.At(0, 0)
 	if prevBallCenterX-radius < 0 || prevBallCenterX+radius > screenWidth {
 		ballCenterX -= moveVector.At(0, 0)
@@ -149,9 +147,26 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// 現在のTPSを表示させる
 	msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
 	ebitenutil.DebugPrint(screen, msg)
-	// msg := fmt.Sprintf("centerX %0.2f", ballCenterX)
-	// ebitenutil.DebugPrint(screen, msg)
-	// fmt.Printf("%f\n", ballCenterX)
+
+	// サンプルの四角形を表示
+	const w, h = 16, 16
+	s, err := ebiten.NewShader([]byte(`package main
+	var Color vec4
+	func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
+		return Color
+	}`))
+	if err != nil {
+		return
+	}
+
+	op2 := &ebiten.DrawRectShaderOptions{}
+
+	op2.CompositeMode = ebiten.CompositeModeCopy
+	op2.Uniforms = map[string]interface{}{
+		"Color": []float32{0.5, 1, 1, 1},
+	}
+	op2.GeoM.Translate(screenWidth/2, screenHeight/2)
+	screen.DrawRectShader(w, h, s, op2)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
