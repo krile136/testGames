@@ -10,6 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
+	"github.com/krile136/testGame/games/breakout/block"
+
 	// 行列を使うライブラリ
 	"gonum.org/v1/gonum/mat"
 )
@@ -30,6 +32,8 @@ var (
 	velAngle    float64 = math.Pi / 4
 	velocity    float64 = 5
 )
+
+type Blocks []*block.Block
 
 func init() {
 	// 空の画像の色を白で初期化
@@ -145,8 +149,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawTriangles(vertices, indices, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), op)
 
 	// 現在のTPSを表示させる
-	msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
-	ebitenutil.DebugPrint(screen, msg)
+	// msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
+	// ebitenutil.DebugPrint(screen, msg)
 
 	// サンプルの四角形を表示
 	const w, h = 16, 16
@@ -167,6 +171,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 	op2.GeoM.Translate(screenWidth/2, screenHeight/2)
 	screen.DrawRectShader(w, h, s, op2)
+
+	var blks Blocks
+	blks = append(blks, block.NewBlock(100))
+	blks = append(blks, block.NewBlock(200))
+
+	for i, value := range blks {
+		msg := fmt.Sprintf("wisdh: %d", value.Width)
+		ebitenutil.DebugPrintAt(screen, msg, 0, 10*i)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
