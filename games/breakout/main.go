@@ -149,37 +149,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawTriangles(vertices, indices, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), op)
 
 	// 現在のTPSを表示させる
-	// msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
-	// ebitenutil.DebugPrint(screen, msg)
-
-	// サンプルの四角形を表示
-	const w, h = 16, 16
-	s, err := ebiten.NewShader([]byte(`package main
-	var Color vec4
-	func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
-		return Color
-	}`))
-	if err != nil {
-		return
-	}
-
-	op2 := &ebiten.DrawRectShaderOptions{}
-
-	op2.CompositeMode = ebiten.CompositeModeCopy
-	op2.Uniforms = map[string]interface{}{
-		"Color": []float32{0.5, 1, 1, 1},
-	}
-	op2.GeoM.Translate(screenWidth/2, screenHeight/2)
-	screen.DrawRectShader(w, h, s, op2)
+	msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
+	ebitenutil.DebugPrint(screen, msg)
 
 	var blks Blocks
-	blks = append(blks, block.NewBlock(100))
-	blks = append(blks, block.NewBlock(200))
+	blks = append(blks, block.NewBlock(screenWidth/2, screenHeight/2, 16, 16, 0.5, 1, 1, 1, 0))
+	blks[0].Show(screen)
 
-	for i, value := range blks {
-		msg := fmt.Sprintf("wisdh: %d", value.Width)
-		ebitenutil.DebugPrintAt(screen, msg, 0, 10*i)
-	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
