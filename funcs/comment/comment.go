@@ -1,4 +1,4 @@
-package comment 
+package comment
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -8,4 +8,3 @@ import (
 func Print(screen *ebiten.Image, text string) {
 	ebitenutil.DebugPrint(screen, text)
 }
-

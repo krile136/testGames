@@ -109,11 +109,10 @@ func genVertices(num int, rad float64, x float32, y float32) []ebiten.Vertex {
 type Game struct{}
 
 func (g *Game) Update() error {
-
 	px, py := input.Current().GetPosition()
 	vertices_mouse = genVertices(ngon, radius, float32(px), float32(py))
-	str := blks[0].CalcBorderTouch(float64(px), float64(py), radius)
-	log.Print(str)
+	// str := blks[0].CalcBorderTouch(float64(px), float64(py), radius)
+	// log.Print(str)
 	// 進行方向の角度による回転行列を生成
 	basicPostureArray := []float64{math.Cos(velAngle), -math.Sin(velAngle), math.Sin(velAngle), math.Cos(velAngle)}
 	postureRotateMatrix := mat.NewDense(2, 2, basicPostureArray)
@@ -140,22 +139,6 @@ func (g *Game) Update() error {
 
 	// ブロックにぶつかったときの処理
 	for _, v := range blks {
-		// lux, luy, ldy, rux := v.AngleCoodinates()
-
-		// // ボールがブロックの範囲内に侵入したかどうか
-		// if movedBallCenterX+radius > lux && movedBallCenterX-radius < rux && movedBallCenterY+radius > luy && movedBallCenterY-radius < ldy {
-		// 	if lux < ballCenterX && ballCenterX < rux {
-		// 		// 移動前のボールの位置がブロックの横幅範囲内のとき、上下の枠に触れた
-		// 		yReverse = -1
-		// 	} else if luy < ballCenterY && ballCenterY < ldy {
-		// 		// 移動前のボールの位置がブロックの縦幅範囲内のとき、左右の枠に触れた
-		// 		xReverse = -1
-		// 	} else {
-		// 		// それ以外のとき、斜めから触れてきたので上下左右を反転
-		// 		xReverse = -1
-		// 		yReverse = -1
-		// 	}
-		// }
 		isTouch_left_or_right, isTouch_upper_or_down := v.GetTouchedBorder(ballCenterX, ballCenterY, movedBallCenterX, movedBallCenterY, radius)
 		if isTouch_left_or_right {
 			xReverse = -1
@@ -165,6 +148,14 @@ func (g *Game) Update() error {
 		}
 
 	}
+
+	// プレイヤーで反射するかの処理
+	reflect := block.Current().IsReflect(movedBallCenterX, movedBallCenterY, radius)
+	if reflect {
+		yReverse = -1
+	}
+
+	// 最終的な次のボール位置と角度の計算
 	ballCenterX += moveVector.At(0, 0) * float64(xReverse)
 	ballCenterY += moveVector.At(1, 0) * float64(yReverse)
 	if xReverse < 0 {
@@ -181,6 +172,8 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	// プレイヤーのブロックを表示させる
+	block.Current().Show(screen)
 
 	// ボールを表示させる
 	op := &ebiten.DrawTrianglesOptions{}
@@ -195,7 +188,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for i := 0; i < ngon; i++ {
 		indices_mouse = append(indices_mouse, uint16(i), uint16(i+1)%uint16(ngon), uint16(ngon))
 	}
-	screen.DrawTriangles(vertices_mouse, indices_mouse, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), op)
+	// screen.DrawTriangles(vertices_mouse, indices_mouse, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), op)
 
 	// 現在のTPSを表示させる
 	msg := fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
