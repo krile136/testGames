@@ -9,7 +9,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/krile136/testGame/src/picture"
+	"github.com/krile136/testGame/funcs/picture"
 
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
